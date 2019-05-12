@@ -10,6 +10,7 @@ abstract class BaseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         callClass = getCallClass(intent)
         setContentView(layout)
+        initView()
     }
 
     abstract fun initView()

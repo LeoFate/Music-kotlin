@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/menu_setting"
+        android:actionLayout="@layout/activity_main"
+        android:icon="@drawable/y7"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        tools:ignore="MenuTitle" />
+    <item
+        android:id="@+id/menu_search"
+        android:actionLayout="@layout/activity_main"
+        android:icon="@drawable/ye"
+        android:orderInCategory="200"
+        app:showAsAction="always"
+        tools:ignore="MenuTitle" />
+</menu>

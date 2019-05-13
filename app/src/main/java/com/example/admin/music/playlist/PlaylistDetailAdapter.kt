@@ -19,7 +19,6 @@ class PlaylistDetailAdapter(context: Context, private val playlistDetailData: Pl
     }
 
     private val tracksList: List<PlaylistDetailBean.Track> = playlistDetailData.playlist.tracks
-
     override fun getItemViewType(position: Int): Int {
         return if (position == 0)
             HEAD_TYPE
@@ -59,30 +58,18 @@ class PlaylistDetailAdapter(context: Context, private val playlistDetailData: Pl
     }
 
     override fun getItemCount(): Int {
-        return tracksList!!.size + 1
+        return tracksList.size + 1
     }
 
     internal inner class HeadHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var avatar: ImageView
-        var name: TextView
-        var author: TextView
-
-        init {
-            avatar = itemView.findViewById(R.id.head_avatar)
-            name = itemView.findViewById(R.id.head_name)
-            author = itemView.findViewById(R.id.head_author)
-        }
+        var avatar: ImageView = itemView.findViewById(R.id.head_avatar)
+        var name: TextView = itemView.findViewById(R.id.head_name)
+        var author: TextView = itemView.findViewById(R.id.head_author)
     }
 
     internal inner class MainHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var serialNumber: TextView
-        var name: TextView
-        var author: TextView
-
-        init {
-            serialNumber = itemView.findViewById(R.id.serial_number)
-            name = itemView.findViewById(R.id.song_name)
-            author = itemView.findViewById(R.id.song_author)
-        }
+        var serialNumber: TextView = itemView.findViewById(R.id.serial_number)
+        var name: TextView = itemView.findViewById(R.id.song_name)
+        var author: TextView = itemView.findViewById(R.id.song_author)
     }
 }

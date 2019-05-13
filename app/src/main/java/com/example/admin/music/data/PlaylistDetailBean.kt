@@ -90,14 +90,14 @@ class PlaylistDetailBean {
             val br: Int,
             val fid: Int,
             val size: Int,
-            val vd: Int
+            val vd: Double
     )
 
     data class L(
             val br: Int,
             val fid: Int,
             val size: Int,
-            val vd: Int
+            val vd: Double
     )
 
     data class Ar(
@@ -111,7 +111,7 @@ class PlaylistDetailBean {
             val br: Int,
             val fid: Int,
             val size: Int,
-            val vd: Int
+            val vd: Double
     )
 
     data class Creator(
@@ -125,7 +125,7 @@ class PlaylistDetailBean {
             val backgroundImgId: Long,
             val backgroundImgIdStr: String,
             val backgroundUrl: String,
-            val birthday: Int,
+            val birthday: String,
             val city: Int,
             val defaultAvatar: Boolean,
             val description: String,

@@ -5,10 +5,7 @@ import retrofit2.Call
 
 class MainNetwork private constructor() : BasedNetwork() {
     private val main: Api.Main = retrofit.create(Api.Main::class.java)
-
-    fun getPlayList(uid: String): Call<PlaylistBean.PlaylistData> {
-        return main.getPlayList(uid)
-    }
+    fun getPlayList(uid: String): Call<PlaylistBean.PlaylistData> = main.getPlayList(uid)
 
     companion object {
         val instance: MainNetwork

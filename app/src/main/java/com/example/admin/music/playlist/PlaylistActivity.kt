@@ -11,7 +11,6 @@ class PlaylistActivity : BaseActivity(), PlaylistContact.View {
     private var id: String = ""
     private lateinit var recyclerView: RecyclerView
     private var playlistPresenter = PlaylistPresenter(this)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         layout = R.layout.activity_playlist
         super.onCreate(savedInstanceState)

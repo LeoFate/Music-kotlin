@@ -9,10 +9,13 @@ import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.example.admin.music.R
 import com.example.admin.music.base.BaseRVAdapter
+import com.example.admin.music.base.getMyIntent
 import com.example.admin.music.data.PlaylistDetailBean
+import com.example.admin.music.service.SongService
 
 class PlaylistDetailAdapter(context: Context, private val playlistDetailData: PlaylistDetailBean.PlaylistDetailData) :
     BaseRVAdapter(context), PlaylistContact.PlaylistDetailAdapter {
+
     companion object {
         private const val HEAD_TYPE = 0
         private const val MAIN_TYPE = 1
@@ -51,14 +54,26 @@ class PlaylistDetailAdapter(context: Context, private val playlistDetailData: Pl
                 val tracksBean = tracksList[i - 1]
                 mainHolder.serialNumber.text = (i - 1).toString()
                 mainHolder.name.text = tracksBean.name
-                val author = tracksBean.ar[0].name + tracksBean.al.name
+                val author = tracksBean.ar[0].name + " - " + tracksBean.al.name
                 mainHolder.author.text = author
+                mainHolder.itemView.setOnClickListener { _ ->
+                    run {
+                        val intent = getMyIntent(context, SongService::class.java)
+                        intent.putExtra(SongService.CLICK_POSITION, i - 1)
+                        intent.putExtra(SongService.PLAYLIST_ID, playlistDetailData.playlist.id)
+                        context.startService(intent)
+                    }
+                }
             }
         }
     }
 
     override fun getItemCount(): Int {
         return tracksList.size + 1
+    }
+
+    override fun getSongUrl(urlList: List<String>) {
+
     }
 
     internal inner class HeadHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

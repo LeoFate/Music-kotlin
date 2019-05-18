@@ -3,7 +3,7 @@ package com.example.admin.music.login
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import com.example.admin.music.data.LoginBean
+import com.example.admin.music.data.LoginData
 import com.example.admin.music.service.LoginNetwork
 import retrofit2.Call
 import retrofit2.Callback
@@ -31,7 +31,11 @@ class LoginPresenter(private val loginView: LoginContact.View) : LoginContact.Pr
         val avatar = sharedPreferences.getString("avatar", null)
         val nickName = sharedPreferences.getString("nickName", null)
         if (id != null && userName != null && avatar != null && nickName != null) {
-            if (phone == sharedPreferences.getString("phone", null) && password == sharedPreferences.getString("password", null)) {
+            if (phone == sharedPreferences.getString(
+                    "phone",
+                    null
+                ) && password == sharedPreferences.getString("password", null)
+            ) {
                 loginView.startMain(userName, id, avatar, nickName)
             } else {
                 Toast.makeText(context, "Invalid phone number or password.", Toast.LENGTH_SHORT).show()
@@ -41,8 +45,8 @@ class LoginPresenter(private val loginView: LoginContact.View) : LoginContact.Pr
             WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
             int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
             Log.e("TEXT", String.valueOf(ipAddress));*/
-            LoginNetwork.instance.loginCall(phone, password).enqueue(object : Callback<LoginBean.LoginData> {
-                override fun onResponse(call: Call<LoginBean.LoginData>, response: Response<LoginBean.LoginData>) {
+            LoginNetwork.instance.loginCall(phone, password).enqueue(object : Callback<LoginData> {
+                override fun onResponse(call: Call<LoginData>, response: Response<LoginData>) {
                     val code = response.body()?.code ?: 0
                     loginView.saveMessage(code)
                     when (code) {
@@ -68,7 +72,7 @@ class LoginPresenter(private val loginView: LoginContact.View) : LoginContact.Pr
                     }
                 }
 
-                override fun onFailure(call: Call<LoginBean.LoginData>, t: Throwable) {
+                override fun onFailure(call: Call<LoginData>, t: Throwable) {
                     Log.e(TAG, "Login network failure", t)
                     Toast.makeText(context, "Login network failure", Toast.LENGTH_SHORT).show()
                 }

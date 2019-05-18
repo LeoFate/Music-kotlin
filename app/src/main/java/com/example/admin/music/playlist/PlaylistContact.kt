@@ -7,7 +7,10 @@ interface PlaylistContact {
         fun initRV(playlistDetailData: PlaylistDetailBean.PlaylistDetailData)
     }
 
-    interface PlaylistDetailAdapter
-
-    interface Presenter
+    interface PlaylistDetailAdapter{
+        fun getSongUrl(urlList: List<String>)
+    }
+    interface Presenter {
+        fun getData(id: String)
+    }
 }

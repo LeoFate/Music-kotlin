@@ -18,7 +18,7 @@ class PlaylistDetailBean {
             val creator: Creator,
             val description: Any,
             val highQuality: Boolean,
-            val id: Long,
+            val id: String,
             val name: String,
             val newImported: Boolean,
             val ordered: Boolean,
@@ -55,7 +55,7 @@ class PlaylistDetailBean {
             val fee: Int,
             val ftype: Int,
             val h: H,
-            val id: Int,
+            val id: String,
             val l: L,
             val m: M,
             val mst: Int,
@@ -146,7 +146,7 @@ class PlaylistDetailBean {
     )
 
     data class TrackId(
-            val id: Int,
+            val id: String,
             val v: Int
     )
 

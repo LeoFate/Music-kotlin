@@ -11,7 +11,7 @@ import retrofit2.Response
 
 internal class PlaylistPresenter(private val view: PlaylistContact.View) : PlaylistContact.Presenter {
 
-    fun getData(id: String) {
+    override fun getData(id: String) {
         PlaylistNetwork.instance.getDetail(id).enqueue(object : Callback<PlaylistDetailBean.PlaylistDetailData> {
             override fun onResponse(
                 call: Call<PlaylistDetailBean.PlaylistDetailData>,
@@ -23,7 +23,6 @@ internal class PlaylistPresenter(private val view: PlaylistContact.View) : Playl
                     Toast.makeText(view as Activity, "Null response.", Toast.LENGTH_SHORT).show()
                     Log.e(javaClass.name, "Fail to get Playlist", e)
                 }
-
             }
 
             override fun onFailure(call: Call<PlaylistDetailBean.PlaylistDetailData>, t: Throwable) {

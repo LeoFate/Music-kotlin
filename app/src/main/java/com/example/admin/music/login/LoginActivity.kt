@@ -5,12 +5,12 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
-import com.example.admin.music.main.MainActivity
 import com.example.admin.music.R
 import com.example.admin.music.base.BaseActivity
 import com.example.admin.music.base.getMyIntent
-import com.example.admin.music.data.LoginBean
+import com.example.admin.music.data.LoginData
 import com.example.admin.music.launch.LaunchActivity
+import com.example.admin.music.main.MainActivity
 
 class LoginActivity : BaseActivity(), LoginContact.View {
     private lateinit var editText1: EditText
@@ -116,7 +116,7 @@ class LoginActivity : BaseActivity(), LoginContact.View {
         }
     }
 
-    override fun startMain(loginData: LoginBean.LoginData) {
+    override fun startMain(loginData: LoginData) {
         val intent = getMyIntent(this, MainActivity::class.java)
         intent.putExtra("userName", loginData.account.userName)
         intent.putExtra("id", loginData.account.id)

@@ -33,7 +33,7 @@
         <activity android:name=".playlist.PlaylistActivity"/>
 
         <service
-                android:name=".service.SongService"
+                android:name=".playback.SongService"
                 android:enabled="true"
                 android:exported="false">
         </service>

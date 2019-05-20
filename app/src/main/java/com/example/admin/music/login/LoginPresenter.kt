@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import com.example.admin.music.data.LoginData
-import com.example.admin.music.service.LoginNetwork
+import com.example.admin.music.networkservice.LoginNetwork
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -45,7 +45,7 @@ class LoginPresenter(private val loginView: LoginContact.View) : LoginContact.Pr
             WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
             int ipAddress = wifiManager.getConnectionInfo().getIpAddress();
             Log.e("TEXT", String.valueOf(ipAddress));*/
-            LoginNetwork.instance.loginCall(phone, password).enqueue(object : Callback<LoginData> {
+            LoginNetwork.loginCall(phone, password).enqueue(object : Callback<LoginData> {
                 override fun onResponse(call: Call<LoginData>, response: Response<LoginData>) {
                     val code = response.body()?.code ?: 0
                     loginView.saveMessage(code)

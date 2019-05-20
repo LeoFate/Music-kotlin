@@ -11,7 +11,7 @@ import com.example.admin.music.R
 import com.example.admin.music.base.BaseRVAdapter
 import com.example.admin.music.base.getMyIntent
 import com.example.admin.music.data.PlaylistDetailBean
-import com.example.admin.music.service.SongService
+import com.example.admin.music.playback.SongService
 
 class PlaylistDetailAdapter(context: Context, private val playlistDetailData: PlaylistDetailBean.PlaylistDetailData) :
     BaseRVAdapter(context), PlaylistContact.PlaylistDetailAdapter {

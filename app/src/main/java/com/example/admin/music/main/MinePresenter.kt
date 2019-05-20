@@ -3,8 +3,8 @@ package com.example.admin.music.main
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.widget.Toast
-import com.example.admin.music.service.MainNetwork
 import com.example.admin.music.data.PlaylistBean
+import com.example.admin.music.networkservice.MainNetwork
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -14,7 +14,7 @@ class MinePresenter(private val fragment: MainContact.MineFragment) : MainContac
     override fun getData(uid: String) {
         val frag = fragment as Fragment
         val context = frag.context
-        MainNetwork.instance.getPlayList(uid).enqueue(object : Callback<PlaylistBean.PlaylistData> {
+        MainNetwork.getPlayList(uid).enqueue(object : Callback<PlaylistBean.PlaylistData> {
             override fun onResponse(
                 call: Call<PlaylistBean.PlaylistData>,
                 response: Response<PlaylistBean.PlaylistData>

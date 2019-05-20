@@ -1,10 +1,10 @@
-package com.example.admin.music.service
+package com.example.admin.music.base
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 abstract class BasedNetwork {
-     companion object {
+    companion object {
         private const val BASE_URL = "http://192.168.43.10:3000"
     }
 
@@ -12,5 +12,4 @@ abstract class BasedNetwork {
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL)
         .build()
-
 }

@@ -1,4 +1,4 @@
-package com.example.admin.music.service
+package com.example.admin.music.networkservice
 
 import com.example.admin.music.data.*
 import retrofit2.Call

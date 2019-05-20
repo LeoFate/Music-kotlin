@@ -1,4 +1,4 @@
-package com.example.admin.music.service
+package com.example.admin.music.playback
 
 import android.app.Service
 import android.content.Intent
@@ -6,6 +6,9 @@ import android.media.MediaPlayer
 import android.media.MediaSync
 import android.os.AsyncTask
 import android.os.IBinder
+import android.os.PowerManager
+import com.example.admin.music.networkservice.PlaylistNetwork
+import com.example.admin.music.networkservice.SongNetwork
 
 class SongService : Service(),
     MediaPlayer.OnPreparedListener,
@@ -57,6 +60,7 @@ class SongService : Service(),
 
     override fun onCreate() {
         mediaPlayer = MediaPlayer()
+        mediaPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK)
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -92,7 +96,7 @@ class SongService : Service(),
         override fun doInBackground(vararg params: String): Void? {
             val index: Int
             if (tracksIdList.isEmpty()) {
-                PlaylistNetwork.instance.getDetail(params[0]).execute().body()?.playlist?.trackIds?.forEach {
+                PlaylistNetwork.getDetail(params[0]).execute().body()?.playlist?.trackIds?.forEach {
                     tracksIdList.add(it.id)
                 }
                 songList = MutableList(tracksIdList.size) { "" }
@@ -101,7 +105,7 @@ class SongService : Service(),
                 index = params[0].toInt()
             }
             songList[index] =
-                    (SongNetwork.instance.getSongUrl(tracksIdList[index]).execute().body()?.data?.get(0)?.url!!)
+                    (SongNetwork.getSongUrl(tracksIdList[index]).execute().body()?.data?.get(0)?.url!!)
             playMusic(songList[index])
             return null
         }

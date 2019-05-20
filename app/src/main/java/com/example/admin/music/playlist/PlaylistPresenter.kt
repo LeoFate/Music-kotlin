@@ -3,8 +3,8 @@ package com.example.admin.music.playlist
 import android.app.Activity
 import android.util.Log
 import android.widget.Toast
-import com.example.admin.music.service.PlaylistNetwork
 import com.example.admin.music.data.PlaylistDetailBean
+import com.example.admin.music.networkservice.PlaylistNetwork
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -12,7 +12,7 @@ import retrofit2.Response
 internal class PlaylistPresenter(private val view: PlaylistContact.View) : PlaylistContact.Presenter {
 
     override fun getData(id: String) {
-        PlaylistNetwork.instance.getDetail(id).enqueue(object : Callback<PlaylistDetailBean.PlaylistDetailData> {
+        PlaylistNetwork.getDetail(id).enqueue(object : Callback<PlaylistDetailBean.PlaylistDetailData> {
             override fun onResponse(
                 call: Call<PlaylistDetailBean.PlaylistDetailData>,
                 response: Response<PlaylistDetailBean.PlaylistDetailData>

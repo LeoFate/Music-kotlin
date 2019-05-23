@@ -9,4 +9,5 @@
     <string name="avatar">avatar</string>
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
+    <string name="playback_channel">playback</string>
 </resources>

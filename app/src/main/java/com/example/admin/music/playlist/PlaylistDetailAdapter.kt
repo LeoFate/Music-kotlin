@@ -1,6 +1,10 @@
 package com.example.admin.music.playlist
 
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +15,7 @@ import com.example.admin.music.R
 import com.example.admin.music.base.BaseRVAdapter
 import com.example.admin.music.base.getMyIntent
 import com.example.admin.music.data.PlaylistDetailBean
+import com.example.admin.music.playback.PlaybackActivity
 import com.example.admin.music.playback.SongService
 
 class PlaylistDetailAdapter(context: Context, private val playlistDetailData: PlaylistDetailBean.PlaylistDetailData) :
@@ -22,6 +27,7 @@ class PlaylistDetailAdapter(context: Context, private val playlistDetailData: Pl
     }
 
     private val tracksList: List<PlaylistDetailBean.Track> = playlistDetailData.playlist.tracks
+    private var songPosition = -1
     override fun getItemViewType(position: Int): Int {
         return if (position == 0)
             HEAD_TYPE
@@ -42,25 +48,41 @@ class PlaylistDetailAdapter(context: Context, private val playlistDetailData: Pl
         when (getItemViewType(i)) {
             HEAD_TYPE -> {
                 val headHolder = viewHolder as HeadHolder
-                val creatorBean = playlistDetailData.playlist.creator
-                headHolder.author.text = creatorBean.nickname
+                val playlistBean = playlistDetailData.playlist
+                headHolder.author.text = playlistBean.creator.nickname
                 Glide.with(viewHolder.itemView)
-                    .load(creatorBean.avatarUrl)
+                    .load(playlistBean.coverImgUrl)
                     .into(headHolder.avatar)
-                headHolder.name.text = playlistDetailData.playlist.name
+                headHolder.name.text = playlistBean.name
             }
             MAIN_TYPE -> {
+                songPosition = SongService.instance?.songPosition ?: -1
                 val mainHolder = viewHolder as MainHolder
                 val tracksBean = tracksList[i - 1]
-                mainHolder.serialNumber.text = (i - 1).toString()
+                mainHolder.serialNumber.text = i.toString()
                 mainHolder.name.text = tracksBean.name
-                val author = tracksBean.ar[0].name + " - " + tracksBean.al.name
-                mainHolder.author.text = author
-                mainHolder.itemView.setOnClickListener { _ ->
-                    run {
-                        val intent = getMyIntent(context, SongService::class.java)
-                        intent.putExtra(SongService.CLICK_POSITION, i - 1)
-                        intent.putExtra(SongService.PLAYLIST_ID, playlistDetailData.playlist.id)
+                val singer = tracksBean.ar[0].name + " - " + tracksBean.al.name
+                mainHolder.author.text = singer
+                if (songPosition == i - 1) {
+                    mainHolder.playing.visibility = View.VISIBLE
+                    mainHolder.serialNumber.visibility = View.INVISIBLE
+                }
+                mainHolder.itemView.setOnClickListener {
+                    showNotification(tracksBean)/*FIXME*/
+                    if (i - 1 == SongService.instance?.songPosition ?: -1) run {
+                        val intent = getMyIntent(context, PlaybackActivity::class.java).apply {
+                            putExtra("name", tracksBean.name)
+                            putExtra("singer", tracksBean.ar[0].name)
+                            putExtra("picUrl", tracksBean.al.picUrl)
+                        }
+                        context.startActivity(intent)
+                    } else run {
+                        mainHolder.playing.visibility = View.VISIBLE
+                        mainHolder.serialNumber.visibility = View.INVISIBLE
+                        val intent = getMyIntent(context, SongService::class.java).apply {
+                            putExtra(SongService.CLICK_POSITION, i - 1)
+                            putExtra(SongService.PLAYLIST_ID, playlistDetailData.playlist.id)
+                        }
                         context.startService(intent)
                     }
                 }
@@ -72,19 +94,36 @@ class PlaylistDetailAdapter(context: Context, private val playlistDetailData: Pl
         return tracksList.size + 1
     }
 
-    override fun getSongUrl(urlList: List<String>) {
-
+    override fun showNotification(tracksBean: PlaylistDetailBean.Track) {
+        val intent = getMyIntent(context, PlaybackActivity::class.java).apply {
+            putExtra("name", tracksBean.name)
+            putExtra("singer", tracksBean.ar[0].name)
+            putExtra("picUrl", tracksBean.al.picUrl)
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+        val builder = NotificationCompat.Builder(context, context.getString(R.string.playback_channel))
+            .setSmallIcon(R.drawable.notification_icon)
+            .setContentTitle("My notification")
+            .setContentText("Hello World!")
+            .setContentIntent(pendingIntent)
+        with(NotificationManagerCompat.from(context)) {
+            // notificationId is a unique int for each notification that you must define
+            val notificationId = 10
+            notify(notificationId, builder.build())
+        }
     }
 
     internal inner class HeadHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var avatar: ImageView = itemView.findViewById(R.id.head_avatar)
-        var name: TextView = itemView.findViewById(R.id.head_name)
-        var author: TextView = itemView.findViewById(R.id.head_author)
+        val avatar: ImageView = itemView.findViewById(R.id.head_avatar)
+        val name: TextView = itemView.findViewById(R.id.head_name)
+        val author: TextView = itemView.findViewById(R.id.head_author)
     }
 
     internal inner class MainHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var serialNumber: TextView = itemView.findViewById(R.id.serial_number)
-        var name: TextView = itemView.findViewById(R.id.song_name)
-        var author: TextView = itemView.findViewById(R.id.song_author)
+        val serialNumber: TextView = itemView.findViewById(R.id.serial_number)
+        val playing: ImageView = itemView.findViewById(R.id.is_playing)
+        val name: TextView = itemView.findViewById(R.id.song_name)
+        val author: TextView = itemView.findViewById(R.id.song_author)
     }
 }

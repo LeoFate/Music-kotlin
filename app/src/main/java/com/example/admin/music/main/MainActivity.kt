@@ -1,5 +1,8 @@
 package com.example.admin.music.main
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -31,7 +34,6 @@ class MainActivity : BaseActivity(), MainContact.View {
     private var id: String = ""
     private var mAvatar: String = ""
     private var mNickName: String = ""
-
     override fun onCreate(savedInstanceState: Bundle?) {
         layout = R.layout.activity_main
         super.onCreate(savedInstanceState)
@@ -91,6 +93,16 @@ class MainActivity : BaseActivity(), MainContact.View {
         mineFragment.arguments = bundle
         fragmentList.add(mineFragment)
         viewPager.adapter = ViewPagerAdapter(supportFragmentManager, fragmentList)
+    }
+
+    override fun createNotificationChannel() {
+        val channel = NotificationChannel(getString(R.string.playback_channel), "playback", NotificationManager.IMPORTANCE_HIGH).apply {
+            description = "playback channel"
+        }
+        // Register the channel with the system
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {

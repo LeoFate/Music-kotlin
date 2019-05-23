@@ -8,10 +8,10 @@ interface MainContact {
         fun initDrawer(avatar: String, nickName: String)
         fun initToolBar()
         fun initViewPager(uid: String)
+        fun createNotificationChannel()
     }
 
     interface Presenter
-
     interface MineFragment {
         fun initRv(playlistData: PlaylistBean.PlaylistData)
     }

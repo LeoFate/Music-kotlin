@@ -26,4 +26,10 @@ class PlaylistActivity : BaseActivity(), PlaylistContact.View {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = PlaylistDetailAdapter(this, playlistDetailData)
     }
+    override fun displaySpeaker(position: Int) {
+        TODO()
+    }
+    override fun disappearSpeaker(position: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }

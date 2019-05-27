@@ -26,6 +26,7 @@ class PlaylistDetailAdapter(context: Context, private val playlistDetailData: Pl
         private const val MAIN_TYPE = 1
     }
 
+    private val playlistId = playlistDetailData.playlist.id
     private val tracksList: List<PlaylistDetailBean.Track> = playlistDetailData.playlist.tracks
     private var songPosition = -1
     override fun getItemViewType(position: Int): Int {
@@ -55,6 +56,7 @@ class PlaylistDetailAdapter(context: Context, private val playlistDetailData: Pl
                     .into(headHolder.avatar)
                 headHolder.name.text = playlistBean.name
             }
+
             MAIN_TYPE -> {
                 songPosition = SongService.instance?.songPosition ?: -1
                 val mainHolder = viewHolder as MainHolder
@@ -63,14 +65,18 @@ class PlaylistDetailAdapter(context: Context, private val playlistDetailData: Pl
                 mainHolder.name.text = tracksBean.name
                 val singer = tracksBean.ar[0].name + " - " + tracksBean.al.name
                 mainHolder.author.text = singer
-                if (songPosition == i - 1) {
+                var isPlayingThis = songPosition == i - 1 && SongService.instance?.playlistId.equals(playlistId)
+                if (isPlayingThis) {
                     mainHolder.playing.visibility = View.VISIBLE
                     mainHolder.serialNumber.visibility = View.INVISIBLE
                 }
                 mainHolder.itemView.setOnClickListener {
                     showNotification(tracksBean)/*FIXME*/
-                    if (i - 1 == SongService.instance?.songPosition ?: -1) run {
+                    songPosition = SongService.instance?.songPosition ?: -1
+                    isPlayingThis = songPosition == i - 1 && SongService.instance?.playlistId.equals(playlistId)
+                    if (songPosition == i - 1 && isPlayingThis) run {
                         val intent = getMyIntent(context, PlaybackActivity::class.java).apply {
+                            putExtra("playlistId", playlistId)
                             putExtra("name", tracksBean.name)
                             putExtra("singer", tracksBean.ar[0].name)
                             putExtra("picUrl", tracksBean.al.picUrl)
@@ -81,7 +87,7 @@ class PlaylistDetailAdapter(context: Context, private val playlistDetailData: Pl
                         mainHolder.serialNumber.visibility = View.INVISIBLE
                         val intent = getMyIntent(context, SongService::class.java).apply {
                             putExtra(SongService.CLICK_POSITION, i - 1)
-                            putExtra(SongService.PLAYLIST_ID, playlistDetailData.playlist.id)
+                            putExtra(SongService.PLAYLIST_ID, playlistId)
                         }
                         context.startService(intent)
                     }

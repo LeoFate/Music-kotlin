@@ -4,7 +4,6 @@ import android.app.Service
 import android.content.Intent
 import android.media.MediaPlayer
 import android.media.MediaSync
-import android.os.AsyncTask
 import android.os.IBinder
 import android.os.PowerManager
 import com.example.admin.music.networkservice.PlaylistNetwork
@@ -13,7 +12,7 @@ import com.example.admin.music.networkservice.SongNetwork
 class SongService : Service(),
     MediaPlayer.OnPreparedListener,
     MediaSync.OnErrorListener,
-    MediaPlayer.OnCompletionListener {
+    MediaPlayer.OnCompletionListener, PlaybackContract.Service {
 
     companion object {
         const val CLICK_POSITION = "click_position"
@@ -21,18 +20,16 @@ class SongService : Service(),
         var instance: SongService? = null
     }
 
-    enum class State {
-        IDLE, PLAYING, PAUSE
-    }
-
-    private lateinit var mediaPlayer: MediaPlayer
-    lateinit var songList: MutableList<String>
-    var tracksIdList = mutableListOf<String>()
+    lateinit var mediaPlayer: MediaPlayer
+        private set
+    private lateinit var songList: MutableList<String>
+    private var tracksIdList = mutableListOf<String>()
     var songPosition = -1
         private set
-    private lateinit var playlistId: String
-    var state = State.IDLE
-    fun playMusic(url: String) {
+    var playlistId = ""
+        private set
+    private var isPaused = false
+    private fun playMusic(url: String) {
         mediaPlayer.apply {
             setDataSource(url)
             prepareAsync()
@@ -41,33 +38,12 @@ class SongService : Service(),
         }
     }
 
-    private fun checkUrl(position: Int) {
+    private fun playMusic(position: Int) {
         if (songList[position] == "") {
-            SongTask().execute(position.toString())
+            getData(position)
         } else {
             playMusic(songList[position])
         }
-    }
-
-    override fun onPrepared(mp: MediaPlayer) {
-        mp.start()
-        state = State.PLAYING
-
-    }
-
-    override fun onError(sync: MediaSync, what: Int, extra: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
-    override fun onCompletion(mp: MediaPlayer?) {
-        if (songPosition < songList.size - 1) {
-            songPosition++
-            mediaPlayer.reset()
-        } else {
-            songPosition = 0
-            mediaPlayer.reset()
-        }
-        checkUrl(songPosition)
     }
 
     override fun onCreate() {
@@ -78,22 +54,22 @@ class SongService : Service(),
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         songPosition = intent.getIntExtra(CLICK_POSITION, -1)
-        when {
-            state == State.IDLE -> {
+        when (playlistId) {
+            "" -> {
                 playlistId = intent.getStringExtra(PLAYLIST_ID)
-                SongTask().execute(intent.getStringExtra(PLAYLIST_ID), songPosition.toString())
+                getData(songPosition, intent.getStringExtra(PLAYLIST_ID))
             }
 
-            intent.getStringExtra(PLAYLIST_ID) != playlistId -> {
-                mediaPlayer.reset()
-                playlistId = intent.getStringExtra(PLAYLIST_ID)
-                tracksIdList.clear()
-                SongTask().execute(intent.getStringExtra(PLAYLIST_ID), songPosition.toString())
+            intent.getStringExtra(PLAYLIST_ID) -> {
+                reset(mediaPlayer)
+                playMusic(songPosition)
             }
 
             else -> {
-                mediaPlayer.reset()
-                checkUrl(songPosition)
+                reset(mediaPlayer)
+                tracksIdList.clear()
+                playlistId = intent.getStringExtra(PLAYLIST_ID)
+                getData(songPosition, intent.getStringExtra(PLAYLIST_ID))
             }
         }
         return START_REDELIVER_INTENT
@@ -107,59 +83,65 @@ class SongService : Service(),
         return null
     }
 
-    fun pause() {
+    private fun reset(mp: MediaPlayer) {
+        mp.reset()
+    }
+
+    override fun pause() {
         mediaPlayer.pause()
-        state = State.PAUSE
+        isPaused = true
     }
 
-    fun start() {
+    override fun start() {
         mediaPlayer.start()
-        state = State.PLAYING
+        isPaused = false
     }
 
-    fun previous() {
+    override fun previous() {
         if (songPosition > 0) {
             songPosition--
-            mediaPlayer.reset()
+            reset(mediaPlayer)
         } else {
             songPosition = songList.size - 1
-            mediaPlayer.reset()
+            reset(mediaPlayer)
         }
-        checkUrl(songPosition)
+        playMusic(songPosition)
     }
 
-    fun next() {
+    override fun next() {
         if (songPosition < songList.size - 1) {
             songPosition++
-            mediaPlayer.reset()
+            reset(mediaPlayer)
         } else {
             songPosition = 0
-            mediaPlayer.reset()
+            reset(mediaPlayer)
         }
-        checkUrl(songPosition)
+        playMusic(songPosition)
     }
 
-    private inner class SongTask : AsyncTask<String, Void, Void>() {
-        override fun doInBackground(vararg params: String): Void? {
-            val index: Int
+    override fun getData(index: Int, playlistId: String) {
+        Thread(Runnable {
             if (tracksIdList.isEmpty()) {
-                PlaylistNetwork.getDetail(params[0]).execute().body()?.playlist?.trackIds?.forEach {
+                PlaylistNetwork.getDetail(playlistId).execute().body()?.playlist?.trackIds?.forEach {
                     tracksIdList.add(it.id)
                 }
                 songList = MutableList(tracksIdList.size) { "" }
-                index = params[1].toInt()
-            } else {
-                index = params[0].toInt()
             }
             songList[index] =
                 (SongNetwork.getSongUrl(tracksIdList[index]).execute().body()?.data?.get(0)?.url!!)
             playMusic(songList[index])
-//            for (i in 1..5) {
-//                if (index + i == songList.size) index = -i
-//                songList[index + i] =
-//                    (SongNetwork.getSongUrl(tracksIdList[index + i]).execute().body()?.data?.get(0)?.url!!)
-//            }
-            return null
-        }
+        }).start()
+    }
+
+    override fun onPrepared(mp: MediaPlayer) {
+        start()
+    }
+
+    override fun onCompletion(mp: MediaPlayer?) {
+        next()
+    }
+
+    override fun onError(sync: MediaSync, what: Int, extra: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

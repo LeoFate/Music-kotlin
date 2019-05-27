@@ -10,7 +10,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class LoginPresenter(private val loginView: LoginContact.View) : LoginContact.Presenter {
-    private val TAG = javaClass.name
+    private val tag = javaClass.name
 
     companion object {
         //    private final String CODE_200 = "Code 200: Login successfully.";
@@ -63,6 +63,7 @@ class LoginPresenter(private val loginView: LoginContact.View) : LoginContact.Pr
                                 Toast.makeText(loginView as Context, NULL_BODY, Toast.LENGTH_SHORT).show()
                             }
                         }
+
                         400 -> Toast.makeText(loginView as Context, CODE_400, Toast.LENGTH_SHORT).show()
                         415 -> Toast.makeText(loginView as Context, CODE_415, Toast.LENGTH_SHORT).show()
                         501 -> Toast.makeText(loginView as Context, CODE_501, Toast.LENGTH_SHORT).show()
@@ -73,7 +74,7 @@ class LoginPresenter(private val loginView: LoginContact.View) : LoginContact.Pr
                 }
 
                 override fun onFailure(call: Call<LoginData>, t: Throwable) {
-                    Log.e(TAG, "Login network failure", t)
+                    Log.e(tag, "Login network failure", t)
                     Toast.makeText(context, "Login network failure", Toast.LENGTH_SHORT).show()
                 }
             })

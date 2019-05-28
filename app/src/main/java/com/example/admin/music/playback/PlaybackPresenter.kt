@@ -1,7 +1,7 @@
 package com.example.admin.music.playback
 
 import com.example.admin.music.data.PlaylistDetailBean
-import com.example.admin.music.networkservice.PlaylistNetwork
+import com.example.admin.music.network.PlaylistNetwork
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

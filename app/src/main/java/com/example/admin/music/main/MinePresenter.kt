@@ -4,7 +4,7 @@ import android.support.v4.app.Fragment
 import android.util.Log
 import android.widget.Toast
 import com.example.admin.music.data.PlaylistBean
-import com.example.admin.music.networkservice.MainNetwork
+import com.example.admin.music.network.MainNetwork
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

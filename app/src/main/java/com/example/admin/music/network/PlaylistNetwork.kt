@@ -1,4 +1,4 @@
-package com.example.admin.music.networkservice
+package com.example.admin.music.network
 
 import com.example.admin.music.base.BasedNetwork
 import com.example.admin.music.data.PlaylistDetailBean

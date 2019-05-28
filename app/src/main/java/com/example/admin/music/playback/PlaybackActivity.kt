@@ -68,7 +68,7 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
         Glide.with(this)
             .asDrawable()
             .load(url)
-            .transform(MultiTransformation(BlurTransformation(30, 20)))
+            .transform(MultiTransformation(BlurTransformation(30, 30)))
             .into(object : CustomTarget<Drawable>() {
                 override fun onLoadCleared(placeholder: Drawable?) {
 

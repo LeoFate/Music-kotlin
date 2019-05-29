@@ -5,6 +5,7 @@ interface PlaybackContract {
         fun initId()
         fun setBackground(url: String)
         fun initRotatePic(url: String)
+        fun initRotateAnimation()
         fun initText(songName: String, singer: String)
         fun initButton()
         fun initSeekBar()

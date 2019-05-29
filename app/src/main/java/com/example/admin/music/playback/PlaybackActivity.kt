@@ -46,6 +46,7 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
         leftArrow = findViewById(R.id.left_arrow)
         initText(intent.getStringExtra("name"), intent.getStringExtra("singer"))
         initRotatePic(intent.getStringExtra("picUrl"))
+        initRotateAnimation()
         initButton()
         initSeekBar()
     }
@@ -90,6 +91,9 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
             .load(url)
             .apply(RequestOptions.circleCropTransform())
             .into(record)
+    }
+
+    override fun initRotateAnimation() {
         recordAnimator = ObjectAnimator.ofFloat(record, "rotation", 0f, 360f).apply {
             duration = 10000
             interpolator = LinearInterpolator()

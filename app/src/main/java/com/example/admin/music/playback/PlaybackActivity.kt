@@ -3,6 +3,7 @@ package com.example.admin.music.playback
 import android.animation.ObjectAnimator
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -28,7 +29,9 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
     private lateinit var pauseBtn: ImageView
     private lateinit var record: ImageView
     private lateinit var recordAnimator: ObjectAnimator
+    private lateinit var currentPosition: TextView
     private lateinit var seekBar: SeekBar
+    private lateinit var duration: TextView
     private lateinit var songName: TextView
     private lateinit var singer: TextView
     private val playbackPresenter = PlaybackPresenter(this)
@@ -55,7 +58,9 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
         nextSong = findViewById(R.id.next_song)
         playBtn = findViewById(R.id.play_button)
         pauseBtn = findViewById(R.id.pause_button)
+        currentPosition = findViewById(R.id.current_position)
         seekBar = findViewById(R.id.seek_bar)
+        duration = findViewById(R.id.duration)
     }
 
     override fun initText(songName: String, singer: String) {
@@ -119,16 +124,30 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
 
     override fun initSeekBar() {
         val songService = SongService.instance!!
-        seekBar.max = songService.mediaPlayer.duration
+        Log.e("debug", seekBar.max.toString())
         Timer().scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                seekBar.progress = songService.mediaPlayer.currentPosition
+                val duration = songService.mediaPlayer.duration
+                seekBar.max = duration
+                val durationText = (duration / 60000).toString() + ":" + ((duration / 1000) % 60).toString()
+                val currentPosition = songService.mediaPlayer.currentPosition
+                seekBar.progress = currentPosition
+                val currentText =
+                    (currentPosition / 60000).toString() + ":" + ((currentPosition / 1000) % 60).toString()
+                runOnUiThread {
+                    this@PlaybackActivity.currentPosition.text = currentText
+                    this@PlaybackActivity.duration.text = durationText
+                }
             }
-        }, 0, 1000)
+        }, 0, 100)
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
-                if (b)
+                if (b) {
                     songService.mediaPlayer.seekTo(i)
+                }
+                if (i == seekBar.max) {
+                    upgradeUI(SongService.instance?.songPosition!!)
+                }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {

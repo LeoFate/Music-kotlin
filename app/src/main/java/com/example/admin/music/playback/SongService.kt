@@ -3,7 +3,6 @@ package com.example.admin.music.playback
 import android.app.Service
 import android.content.Intent
 import android.media.MediaPlayer
-import android.media.MediaSync
 import android.os.IBinder
 import android.os.PowerManager
 import com.example.admin.music.network.PlaylistNetwork
@@ -11,7 +10,7 @@ import com.example.admin.music.network.SongNetwork
 
 class SongService : Service(),
     MediaPlayer.OnPreparedListener,
-    MediaSync.OnErrorListener,
+    MediaPlayer.OnErrorListener,
     MediaPlayer.OnCompletionListener, PlaybackContract.Service {
 
     companion object {
@@ -33,9 +32,6 @@ class SongService : Service(),
         mediaPlayer.apply {
             setDataSource(url)
             prepareAsync()
-            setOnPreparedListener(this@SongService)
-            //FIXME this method will be called when I called #next()
-//            setOnCompletionListener(this@SongService)
         }
     }
 
@@ -50,7 +46,12 @@ class SongService : Service(),
     override fun onCreate() {
         instance = this
         mediaPlayer = MediaPlayer()
-        mediaPlayer.setWakeMode(this, PowerManager.PARTIAL_WAKE_LOCK)
+        mediaPlayer.apply {
+            setWakeMode(this@SongService, PowerManager.PARTIAL_WAKE_LOCK)
+            setOnPreparedListener(this@SongService)
+            setOnCompletionListener(this@SongService)
+            setOnErrorListener(this@SongService)
+        }
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -190,7 +191,7 @@ class SongService : Service(),
         next()
     }
 
-    override fun onError(sync: MediaSync, what: Int, extra: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onError(mp: MediaPlayer?, what: Int, extra: Int): Boolean {
+        return true
     }
 }

@@ -55,11 +55,34 @@
             android:layout_height="0dp"
             android:layout_weight="5"/>
     
-    <SeekBar
-            android:id="@+id/seek_bar"
+    <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:layout_height="0dp">
+        
+        <TextView
+                android:id="@+id/current_position"
+                android:layout_marginStart="10dp"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+        
+        <SeekBar
+                android:id="@+id/seek_bar"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="10"/>
+        
+        <TextView
+                android:id="@+id/duration"
+                android:layout_width="0dp"
+                android:layout_marginEnd="10dp"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+    </LinearLayout>
+    
     
     <LinearLayout
             android:layout_width="match_parent"

@@ -1,9 +1,11 @@
 package com.example.admin.music.playback
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
@@ -35,6 +37,7 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
     private lateinit var songName: TextView
     private lateinit var singer: TextView
     private val playbackPresenter = PlaybackPresenter(this)
+    private val songService = SongService.instance!!
     override fun onCreate(savedInstanceState: Bundle?) {
         layout = R.layout.activity_playback
         super.onCreate(savedInstanceState)
@@ -86,16 +89,37 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
             })
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun initRotatePic(url: String) {
         Glide.with(this)
             .load(url)
             .apply(RequestOptions.circleCropTransform())
             .into(record)
+        var x1 = 0f
+        record.setOnTouchListener { v, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    x1 = event.rawX
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    val x2 = event.rawX
+                    if (x2 - x1 > 2 * record.width / 5) {
+                        songService.previous()
+                        upgradeUI(songService.songPosition)
+                    } else if (x2 - x1 < -2 * record.width / 5) {
+                        songService.next()
+                        upgradeUI(songService.songPosition)
+                    }
+                }
+            }
+            true
+        }
     }
 
     override fun initRotateAnimation() {
         recordAnimator = ObjectAnimator.ofFloat(record, "rotation", 0f, 360f).apply {
-            duration = 10000
+            duration = 30000
             interpolator = LinearInterpolator()
             repeatCount = Animation.INFINITE
             start()
@@ -103,7 +127,6 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
     }
 
     override fun initButton() {
-        val songService = SongService.instance!!
         pauseBtn.setOnClickListener {
             pauseBtn.visibility = View.GONE
             playBtn.visibility = View.VISIBLE
@@ -129,7 +152,8 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
     override fun initSeekBar() {
         val songService = SongService.instance!!
         Log.e("debug", seekBar.max.toString())
-        Timer().scheduleAtFixedRate(object : TimerTask() {
+        val timer = Timer()
+        timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 val duration = songService.mediaPlayer.duration
                 seekBar.max = duration
@@ -150,6 +174,7 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
                     songService.mediaPlayer.seekTo(i)
                 }
                 if (i == seekBar.max) {
+                    timer.cancel()
                     upgradeUI(SongService.instance?.songPosition!!)
                 }
             }

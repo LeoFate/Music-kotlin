@@ -134,54 +134,6 @@ class SongService : Service(),
             playMusic(songList[index])
         }).start()
     }
-//    override fun getData(index: Int, playlistId: String) {
-//        if (tracksIdList.isEmpty()) {
-//            PlaylistNetwork.getDetail(playlistId).enqueue(object : Callback<PlaylistDetailBean.PlaylistDetailData> {
-//                override fun onFailure(call: Call<PlaylistDetailBean.PlaylistDetailData>, t: Throwable) {
-//                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-//                }
-//
-//                override fun onResponse(
-//                    call: Call<PlaylistDetailBean.PlaylistDetailData>,
-//                    response: Response<PlaylistDetailBean.PlaylistDetailData>
-//                ) {
-//                    response.body()?.playlist?.trackIds?.forEach {
-//                        tracksIdList.add(it.id)
-//                    }
-//                    songList = MutableList(tracksIdList.size) { "" }
-//                    SongNetwork.getSongUrl(tracksIdList[index]).enqueue(object :
-//                        Callback<SongData> {
-//                        override fun onFailure(call: Call<SongData>, t: Throwable) {
-//                            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-//                        }
-//
-//                        override fun onResponse(
-//                            call: Call<SongData>,
-//                            response: Response<SongData>
-//                        ) {
-//                            songList[index] = response.body()?.data?.get(0)?.url!!
-//                            playMusic(songList[index])
-//                        }
-//                    })
-//                }
-//            })
-//        } else {
-//            SongNetwork.getSongUrl(tracksIdList[index]).enqueue(object :
-//                Callback<SongData> {
-//                override fun onFailure(call: Call<SongData>, t: Throwable) {
-//                    TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-//                }
-//
-//                override fun onResponse(
-//                    call: Call<SongData>,
-//                    response: Response<SongData>
-//                ) {
-//                    songList[index] = response.body()?.data?.get(0)?.url!!
-//                    playMusic(songList[index])
-//                }
-//            })
-//        }
-//    }
 
     override fun onPrepared(mp: MediaPlayer) {
         start()

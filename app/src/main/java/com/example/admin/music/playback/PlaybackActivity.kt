@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
-import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.widget.ImageView
@@ -25,10 +24,6 @@ import java.util.*
 
 class PlaybackActivity : BaseActivity(), PlaybackContract.View {
     private lateinit var leftArrow: ImageView
-    private lateinit var lastSong: ImageView
-    private lateinit var nextSong: ImageView
-    private lateinit var playBtn: ImageView
-    private lateinit var pauseBtn: ImageView
     private lateinit var record: ImageView
     private lateinit var recordAnimator: ObjectAnimator
     private lateinit var currentPosition: TextView
@@ -38,6 +33,7 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
     private lateinit var singer: TextView
     private val playbackPresenter = PlaybackPresenter(this)
     private val songService = SongService.instance!!
+    private var isPause = false
     override fun onCreate(savedInstanceState: Bundle?) {
         layout = R.layout.activity_playback
         super.onCreate(savedInstanceState)
@@ -50,7 +46,6 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
         initText(intent.getStringExtra("name"), intent.getStringExtra("singer"))
         initRotatePic(intent.getStringExtra("picUrl"))
         initRotateAnimation()
-        initButton()
         initSeekBar()
     }
 
@@ -58,10 +53,6 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
         songName = findViewById(R.id.song_name)
         singer = findViewById(R.id.singer)
         record = findViewById(R.id.record)
-        lastSong = findViewById(R.id.last_song)
-        nextSong = findViewById(R.id.next_song)
-        playBtn = findViewById(R.id.play_button)
-        pauseBtn = findViewById(R.id.pause_button)
         currentPosition = findViewById(R.id.current_position)
         seekBar = findViewById(R.id.seek_bar)
         duration = findViewById(R.id.duration)
@@ -96,7 +87,7 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
             .apply(RequestOptions.circleCropTransform())
             .into(record)
         var x1 = 0f
-        record.setOnTouchListener { v, event ->
+        record.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     x1 = event.rawX
@@ -104,12 +95,27 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
 
                 MotionEvent.ACTION_UP -> {
                     val x2 = event.rawX
-                    if (x2 - x1 > 2 * record.width / 5) {
-                        songService.previous()
-                        upgradeUI(songService.songPosition)
-                    } else if (x2 - x1 < -2 * record.width / 5) {
-                        songService.next()
-                        upgradeUI(songService.songPosition)
+                    when {
+                        x2 - x1 > 2 * record.width / 5 -> {
+                            songService.previous()
+                            upgradeUI(songService.songPosition)
+                        }
+
+                        x2 - x1 < -2 * record.width / 5 -> {
+                            songService.next()
+                            upgradeUI(songService.songPosition)
+                        }
+
+                        Math.abs(x2 - x1) < 10 -> {
+                            if (isPause) {
+                                recordAnimator.resume()
+                                songService.start()
+                            } else {
+                                recordAnimator.pause()
+                                songService.pause()
+                            }
+                            isPause = !isPause
+                        }
                     }
                 }
             }
@@ -123,29 +129,6 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
             interpolator = LinearInterpolator()
             repeatCount = Animation.INFINITE
             start()
-        }
-    }
-
-    override fun initButton() {
-        pauseBtn.setOnClickListener {
-            pauseBtn.visibility = View.GONE
-            playBtn.visibility = View.VISIBLE
-            recordAnimator.pause()
-            songService.pause()
-        }
-        playBtn.setOnClickListener {
-            playBtn.visibility = View.GONE
-            pauseBtn.visibility = View.VISIBLE
-            recordAnimator.resume()
-            songService.start()
-        }
-        lastSong.setOnClickListener {
-            songService.previous()
-            upgradeUI(songService.songPosition)
-        }
-        nextSong.setOnClickListener {
-            songService.next()
-            upgradeUI(songService.songPosition)
         }
     }
 

@@ -99,11 +99,19 @@ class PlaybackActivity : BaseActivity(), PlaybackContract.View {
                         x2 - x1 > 2 * record.width / 5 -> {
                             songService.previous()
                             upgradeUI(songService.songPosition)
+                            if (isPause) {
+                                recordAnimator.resume()
+                                isPause = !isPause
+                            }
                         }
 
                         x2 - x1 < -2 * record.width / 5 -> {
                             songService.next()
                             upgradeUI(songService.songPosition)
+                            if (isPause) {
+                                recordAnimator.resume()
+                                isPause = !isPause
+                            }
                         }
 
                         Math.abs(x2 - x1) < 10 -> {

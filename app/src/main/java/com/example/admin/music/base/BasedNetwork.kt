@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 abstract class BasedNetwork {
     companion object {
-        private const val BASE_URL = "http://192.168.43.10:3000"
+        var BASE_URL = "http://7wg7ck.natappfree.cc"
     }
 
     protected val retrofit: Retrofit = Retrofit.Builder()

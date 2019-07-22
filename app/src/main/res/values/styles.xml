@@ -12,7 +12,7 @@
     <style name="StartTheme" parent="BaseTheme">
         <!-- Customize your theme here. -->
         <item name="android:windowFullscreen">true</item>
-        <item name="android:background">@drawable/cloud_music_start</item>
+        <item name="android:windowBackground">@drawable/cloud_music_start</item>
     </style>
 
     <style name="MainTheme" parent="BaseTheme">

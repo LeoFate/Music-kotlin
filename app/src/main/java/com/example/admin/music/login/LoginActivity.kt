@@ -73,7 +73,7 @@ class LoginActivity : BaseActivity(), LoginContact.View {
     }
 
     override fun setButtonListener() {
-        button.setOnClickListener { _ ->
+        button.setOnClickListener {
             phoneNum = editText1.text.toString()
             password = editText2.text.toString()
             when {
